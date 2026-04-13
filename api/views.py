@@ -5,7 +5,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from .models import CustomUser, WorkerProfile, Service, Booking
-from .serializers import UserSerializer, LoginSerializer, RegisterSerializer, ServiceSerializer, BookingSerializer
+from .serializers import (
+    UserSerializer, LoginSerializer, RegisterSerializer, 
+    ServiceSerializer, BookingSerializer, WorkerProfileSerializer
+)
 import logging
 
 # Module 3: Debugging/Logging Configuration
