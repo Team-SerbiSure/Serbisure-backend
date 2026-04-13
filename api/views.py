@@ -95,39 +95,44 @@ class GoogleSyncView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        email = request.data.get('email')
-        
-        if not email:
-            return Response({"status": "error", "message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            email = request.data.get('email')
             
-        # 1. Attempt to find existing user
-        user = CustomUser.objects.filter(email=email).first()
-        
-        if not user:
-            # 2. If not found, register new user (Shadow Profile)
-            # Use a secure random password if none provided (UID is typically passed in frontend)
-            password = request.data.get('password', CustomUser.objects.make_random_password())
-            serializer = RegisterSerializer(data={
-                'email': email,
-                'password': password,
-                'full_name': request.data.get('full_name', email.split('@')[0]),
-                'role': request.data.get('role', 'homeowner')
-            })
-            if serializer.is_valid():
-                user = serializer.save()
-            else:
-                return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # 3. Ensure worker profile exists if role is service_worker
-        if user.role == 'service_worker':
-            WorkerProfile.objects.get_or_create(user=user)
+            if not email:
+                return Response({"status": "error", "message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+                
+            # 1. Attempt to find existing user
+            user = CustomUser.objects.filter(email=email).first()
             
-        token, _ = Token.objects.get_or_create(user=user)
-        
-        return Response({
-            "status": "success",
-            "data": {
-                "user": UserSerializer(user).data,
-                "token": token.key
-            }
-        }, status=status.HTTP_200_OK)
+            if not user:
+                # 2. If not found, register new user (Shadow Profile)
+                password = request.data.get('password', CustomUser.objects.make_random_password())
+                serializer = RegisterSerializer(data={
+                    'email': email,
+                    'password': password,
+                    'full_name': request.data.get('full_name', email.split('@')[0]),
+                    'role': request.data.get('role', 'homeowner')
+                })
+                if serializer.is_valid():
+                    user = serializer.save()
+                else:
+                    return Response({"status": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # 3. Ensure worker profile exists if role is service_worker
+            if user.role == 'service_worker':
+                WorkerProfile.objects.get_or_create(user=user)
+                
+            token, _ = Token.objects.get_or_create(user=user)
+            
+            return Response({
+                "status": "success",
+                "data": {
+                    "user": UserSerializer(user).data,
+                    "token": token.key
+                }
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"Server Error: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
