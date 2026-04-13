@@ -39,9 +39,12 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-default-change-me-in-pro
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
-# Support for Vercel/Render wildcard subdomains if configured in environment
+
+# Support for Vercel/Render wildcard subdomains
 if os.environ.get('VERCEL_URL'):
     ALLOWED_HOSTS.append(os.environ.get('VERCEL_URL'))
+    # This automatically allows all your vercel subdomains
+    ALLOWED_HOSTS.append('.vercel.app')
 if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
     ALLOWED_HOSTS.append(os.environ.get('RENDER_EXTERNAL_HOSTNAME'))
 
