@@ -1,19 +1,13 @@
 {
-    "builds": [
+    "version": 2,
+    "rewrites": [
         {
-            "src": "serbisure_backend/wsgi.py",
-            "use": "@vercel/python",
-            "config": { "maxLambdaSize": "15mb", "runtime": "python3.12" }
-        }
-    ],
-    "routes": [
-        {
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
+            "source": "/static/(.*)",
+            "destination": "/static/$1"
         },
         {
-            "src": "/(.*)",
-            "dest": "serbisure_backend/wsgi.py"
+            "source": "/(.*)",
+            "destination": "serbisure_backend/wsgi.py"
         }
     ]
 }
