@@ -38,7 +38,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-default-change-me-in-pro
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = ['*']
 
 # Support for Vercel/Render wildcard subdomains
 if os.environ.get('VERCEL_URL'):
